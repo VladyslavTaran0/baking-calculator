@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор товарів</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#eef2f5;
+    padding:15px;
+    padding-bottom:120px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    color:#2f80ed;
+}
+
+.card{
+    background:white;
+    border-radius:15px;
+    padding:15px;
+    margin-bottom:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.1);
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+select,input{
+    width:100%;
+    height:52px;
+    font-size:18px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    padding:10px;
+}
+
+.price,
+.sum{
+    margin-top:10px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.delete{
+    width:100%;
+    height:50px;
+    margin-top:15px;
+    border:none;
+    background:#e74c3c;
+    color:white;
+    font-size:18px;
+    border-radius:10px;
+}
+
+#addBtn{
+    width:100%;
+    height:60px;
+    background:#27ae60;
+    color:white;
+    font-size:22px;
+    border:none;
+    border-radius:12px;
+    margin-top:10px;
+}
+
+.footer{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    background:white;
+    box-shadow:0 -3px 12px rgba(0,0,0,.15);
+    padding:15px;
+}
+
+.total{
+    text-align:center;
+    font-size:26px;
+    font-weight:bold;
+    color:#2f80ed;
+}
+
+@media(min-width:700px){
+
+body{
+    max-width:700px;
+    margin:auto;
+}
+
+.footer{
+    left:50%;
+    transform:translateX(-50%);
+    max-width:700px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🛒 Калькулятор</h1>
+
+<div id="items"></div>
+
+<button id="addBtn">
+➕ Додати товар
+</button>
+
+<div class="footer">
+
+<div>
+Загальна сума
+</div>
+
+<div class="total" id="grandTotal">
+0 грн
+</div>
+
+</div>
+
+<script>
+
+const products={
+
+"Цемент":120,
+"Цвяхи":15,
+"Фарба":300,
+"Пісок":80,
+"Цегла":25,
+"Штукатурка":180
+
+};
+
+const items=document.getElementById("items");
+
+document.getElementById("addBtn").onclick=addCard;
+
+function createSelect(){
+
+let html="";
+
+for(let p in products){
+
+html+=`<option value="${p}">${p}</option>`;
+
+}
+
+return html;
+
+}
+
+function addCard(){
+
+const card=document.createElement("div");
+
+card.className="card";
+
+card.innerHTML=`
+
+<label>Товар</label>
+
+<select onchange="update(this)">
+${createSelect()}
+</select>
+
+<label>Кількість</label>
+
+<input
+type="number"
+min="1"
+value="1"
+inputmode="numeric"
+oninput="update(this)">
+
+<div class="price">
+Ціна: <span>0</span> грн
+</div>
+
+<div class="sum">
+Сума: <span>0</span> грн
+</div>
+
+<button class="delete" onclick="removeCard(this)">
+🗑 Видалити
+</button>
+
+`;
+
+items.appendChild(card);
+
+update(card.querySelector("select"));
+
+}
+
+function update(el){
+
+const card=el.closest(".card");
+
+const product=card.querySelector("select").value;
+
+const qty=parseFloat(card.querySelector("input").value)||0;
+
+const price=products[product];
+
+const sum=qty*price;
+
+card.querySelector(".price span").textContent=price.toFixed(2);
+
+card.querySelector(".sum span").textContent=sum.toFixed(2);
+
+calculate();
+
+}
+
+function calculate(){
+
+let total=0;
+
+document.querySelectorAll(".sum span").forEach(s=>{
+
+total+=parseFloat(s.textContent)||0;
+
+});
+
+document.getElementById("grandTotal").textContent=
+total.toFixed(2)+" грн";
+
+}
+
+function removeCard(btn){
+
+btn.closest(".card").remove();
+
+calculate();
+
+}
+
+addCard();
+
+</script>
+
+</body>
+</html>
